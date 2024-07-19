@@ -21,6 +21,7 @@
 
 from __future__ import annotations
 import os
+import sys
 
 # Categories of actions:
 #  killing
@@ -229,10 +230,21 @@ class ctrl_c(Command):
 
 class suspend(Command):
     def do(self) -> None:
-        import signal
-
         r = self.reader
         p = r.pos
+        b = r.buffer
+        if sys.platform.startswith("win32"):
+            if (
+                p == 0
+                and len(b) == 0
+                and self.event[-1] == "\032"
+            ):
+                r.update_screen()
+                r.console.finish()
+                raise EOFError
+            else:
+                return
+        import signal
         r.console.finish()
         os.kill(os.getpid(), signal.SIGSTOP)
         ## this should probably be done
