@@ -3269,7 +3269,15 @@ _curses_initscr_impl(PyObject *module)
     PyCursesWindowObject *winobj;
 
     if (initialised) {
-        wrefresh(stdscr);
+        if (stdscr != NULL) {
+            wrefresh(stdscr);
+        } else {
+            stdscr = initscr();
+            if (stdscr == NULL) {
+                PyErr_SetString(PyCursesError, catchall_NULL);
+                return NULL;
+            }
+        }
         return (PyObject *)PyCursesWindow_New(stdscr, NULL);
     }
 
