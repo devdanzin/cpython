@@ -1095,6 +1095,26 @@ class TestCurses(unittest.TestCase):
         self.assertEqual(curses.LINES, lines)
         self.assertEqual(curses.COLS, cols)
 
+    @requires_curses_func('resize_term')
+    def test_resize_term_segfault(self):
+        curses.initscr()
+        lines = cols = 40000
+        try:
+            curses.resize_term(lines, cols)
+        except:
+            pass
+        curses.initscr()
+
+    @requires_curses_func('resizeterm')
+    def test_resizeterm_segfault(self):
+        curses.initscr()
+        lines = cols = 40000
+        try:
+            curses.resizeterm(lines, cols)
+        except:
+            pass
+        curses.initscr()
+
     def test_ungetch(self):
         curses.ungetch(b'A')
         self.assertEqual(self.stdscr.getkey(), 'A')
