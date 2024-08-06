@@ -3269,15 +3269,7 @@ _curses_initscr_impl(PyObject *module)
     PyCursesWindowObject *winobj;
 
     if (initialised) {
-        if (stdscr != NULL) {
-            wrefresh(stdscr);
-        } else {
-            stdscr = initscr();
-            if (stdscr == NULL) {
-                PyErr_SetString(PyCursesError, catchall_NULL);
-                return NULL;
-            }
-        }
+        wrefresh(stdscr);
         return (PyObject *)PyCursesWindow_New(stdscr, NULL);
     }
 
@@ -4115,11 +4107,19 @@ _curses_resizeterm_impl(PyObject *module, int nlines, int ncols)
 
     result = PyCursesCheckERR(resizeterm(nlines, ncols), "resizeterm");
     if (!result) {
-        initialised = FALSE;
+        stdscr = initscr();
+        if (stdscr == NULL) {
+            PyErr_SetString(PyCursesError, catchall_NULL);
+            return NULL;
+        }
         return NULL;
     }
     if (!update_lines_cols()) {
-        initialised = FALSE;
+        stdscr = initscr();
+        if (stdscr == NULL) {
+            PyErr_SetString(PyCursesError, catchall_NULL);
+            return NULL;
+        }
         Py_DECREF(result);
         return NULL;
     }
@@ -4157,11 +4157,19 @@ _curses_resize_term_impl(PyObject *module, int nlines, int ncols)
 
     result = PyCursesCheckERR(resize_term(nlines, ncols), "resize_term");
     if (!result) {
-        initialised = FALSE;
+        stdscr = initscr();
+        if (stdscr == NULL) {
+            PyErr_SetString(PyCursesError, catchall_NULL);
+            return NULL;
+        }
         return NULL;
     }
     if (!update_lines_cols()) {
-        initialised = FALSE;
+        stdscr = initscr();
+        if (stdscr == NULL) {
+            PyErr_SetString(PyCursesError, catchall_NULL);
+            return NULL;
+        }
         Py_DECREF(result);
         return NULL;
     }
