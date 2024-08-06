@@ -4106,9 +4106,12 @@ _curses_resizeterm_impl(PyObject *module, int nlines, int ncols)
     PyCursesInitialised;
 
     result = PyCursesCheckERR(resizeterm(nlines, ncols), "resizeterm");
-    if (!result)
+    if (!result) {
+        initialised = FALSE;
         return NULL;
+    }
     if (!update_lines_cols()) {
+        initialised = FALSE;
         Py_DECREF(result);
         return NULL;
     }
@@ -4145,9 +4148,12 @@ _curses_resize_term_impl(PyObject *module, int nlines, int ncols)
     PyCursesInitialised;
 
     result = PyCursesCheckERR(resize_term(nlines, ncols), "resize_term");
-    if (!result)
+    if (!result) {
+        initialised = FALSE;
         return NULL;
+    }
     if (!update_lines_cols()) {
+        initialised = FALSE;
         Py_DECREF(result);
         return NULL;
     }
